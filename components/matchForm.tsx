@@ -103,14 +103,14 @@ export const MatchForm = () => {
                 <br/>
             </Form.Group>
             <Form.Group className="mb-3">
-                <Form.Label> Preview </Form.Label>
+            <Form.Label> <h5><b> Preview </b></h5></Form.Label>
                 <Table  bordered hover>
                     <thead>
                         <tr>
                             <th> Names </th>
                             <th> 1st Set </th>
-                            <th> 2do Set </th>
-                            <th> 3th Set </th>
+                            <th> 2nd Set </th>
+                            <th> 3rd Set </th>
                             <th> 4th Set </th>
                             <th> 5th Set </th>
                         </tr>
