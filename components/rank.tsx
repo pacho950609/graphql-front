@@ -1,12 +1,5 @@
-import { useState } from 'react';
-import { Form, Button, Table, Col, Row, } from 'react-bootstrap';
+import { Form, Table } from 'react-bootstrap';
 import _ from 'lodash'
-
-interface GameSet {
-    firstPlayerPoints: number;
-    secondPlayerPoints: number;
-    setNumber: number;
-}
 
 export const Rank = () => {  
     return (
