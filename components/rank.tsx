@@ -1,7 +1,40 @@
 import { Form, Table } from 'react-bootstrap';
 import _ from 'lodash'
+import { useEffect, useState } from 'react';
+import client from '../apoloClient/apoloClient';
+import { gql } from "@apollo/client";
+
+interface Ranking {
+    id: string;
+    name: String;
+    lastName: String;
+    wins: number;
+    losses: number;
+}
 
 export const Rank = () => {  
+    const [ranking, setRanking] = useState<Ranking[]>([]);
+    useEffect(() => {
+        client.query({
+            query: gql`
+                {
+                    getRank {
+                        id
+                        name
+                        lastName
+                        wins
+                        losses
+                    }
+                }
+            `,
+        }).then(response => {
+            setRanking(response.data.getRank)
+        }).catch(error=> {
+            console.log('error', error)
+        });
+      
+    }, []);
+
     return (
         <Form>
             <Form.Group className="mb-3">
@@ -16,18 +49,16 @@ export const Rank = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td> 1 </td>
-                            <td> Francisco Ricaurte </td>
-                            <td> 3 </td>
-                            <td> 1 </td>
-                        </tr>
-                        <tr>
-                            <td> 2 </td>
-                            <td> Dhanna Gomez </td>
-                            <td> 2 </td>
-                            <td> 2 </td>
-                        </tr>
+                        { 
+                            ranking.map((rank,index) => 
+                                <tr key={index}>
+                                    <td> {index + 1} </td>
+                                    <td> { `${rank.name} ${rank.lastName}` } </td>
+                                    <td> { rank.wins } </td>
+                                    <td> { rank.losses } </td>
+                                </tr>
+                            )
+                        }
                     </tbody>
                 </Table>
             </Form.Group>
