@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Form, Button, Table, Col, Row, } from 'react-bootstrap';
 import _ from 'lodash'
+import client from '../apoloClient/apoloClient';
+import { gql } from "@apollo/client";
 
 interface GameSet {
     firstPlayerPoints: number;
@@ -12,6 +14,36 @@ export const MatchForm = () => {
     const [gameSets, setGameSet] = useState<GameSet[]>([]);
     const [ firstPlayerPoints, setFirstPlayerPoints ] = useState<number>(0);
     const [ secondPlayerPoints, setSecondPlayerPoints ] = useState<number>(0);
+
+    const createMatch = async () => {
+        const response = await client.mutate({
+            context: {
+                headers: {
+                    Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYxMTk1ZDMzLTRhMzctNGFlYS04OTFiLTA3NWQwZGJlY2M3YSIsImlhdCI6MTY0ODM4MDg0Nn0.USdtRxpXtgaytrLxUnJNzDGovooSCWKT2v6gYuyWvWY'
+                }
+            },
+            variables: {
+                sets: gameSets,
+                firstPlayerId: "d42df319-5d05-4d66-844e-f3447a52743e",
+                secondPlayerId: "9a1ef5ae-986b-47a4-b3d2-dc688d78e569",
+            },
+            mutation: gql`
+                mutation CreateMatch($sets: [SetInput]!, $firstPlayerId: String!, $secondPlayerId: String!){
+                    addMatch(input:{
+                        firstPlayerId: $firstPlayerId
+                        secondPlayerId: $secondPlayerId
+                        sets: $sets
+                    }) {
+                        id
+                        sets {
+                            firstPlayerPoints
+                            secondPlayerPoints
+                            setNumber
+                        }
+                    }
+                }
+            `})
+    }
 
     return (
         <Form>
@@ -86,16 +118,16 @@ export const MatchForm = () => {
                     <tbody>
                         <tr>
                             <td>Francisco Ricaurte</td>
-                            { _.range(5).map(range => <td> { gameSets[range] ? gameSets[range].firstPlayerPoints : '-' } </td>) }
+                            { _.range(5).map(range => <td key={range} > { gameSets[range] ? gameSets[range].firstPlayerPoints : '-' } </td>) }
                         </tr>
                         <tr>
                             <td> Dhanna Gomez </td>
-                            { _.range(5).map(range => <td> { gameSets[range] ? gameSets[range].secondPlayerPoints : '-' } </td>) }
+                            { _.range(5).map(range => <td key={range} > { gameSets[range] ? gameSets[range].secondPlayerPoints : '-' } </td>) }
                         </tr>
                     </tbody>
                 </Table>
             </Form.Group>
-            <Button variant="primary" type="submit">
+            <Button variant="primary" onClick={() => createMatch()}>
                 Save match result
             </Button>
         </Form>
