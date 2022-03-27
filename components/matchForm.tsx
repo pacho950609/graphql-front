@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Form, Button, Table, Col, Row, } from 'react-bootstrap';
 import _ from 'lodash'
 import client from '../apoloClient/apoloClient';
@@ -10,10 +10,41 @@ interface GameSet {
     setNumber: number;
 }
 
+interface Player {
+    id: string;
+    name: String;
+    lastName: String;
+}
+
 export const MatchForm = () => {  
     const [gameSets, setGameSet] = useState<GameSet[]>([]);
+    const [ firstPlayerId, setFirstPlayerId ] = useState<string>('');
+    const [ secondPlayerId, setSecondPlayerId ] = useState<string>('');
     const [ firstPlayerPoints, setFirstPlayerPoints ] = useState<number>(0);
     const [ secondPlayerPoints, setSecondPlayerPoints ] = useState<number>(0);
+    const [players, setPlayers] = useState<Player[]>([]);
+
+    useEffect(() => {
+        client.query({
+            query: gql`
+                {
+                    getPlayers 
+                    {
+                        id
+                        name
+                        lastName
+                    }
+                }
+            `,
+        }).then(response => {
+            setPlayers(response.data.getPlayers)
+            setFirstPlayerId(response.data.getPlayers[0].id)
+            setSecondPlayerId(response.data.getPlayers[1].id)
+        }).catch(error=> {
+            console.log('error', error)
+        });
+      
+    }, []);
 
     const createMatch = async () => {
         const response = await client.mutate({
@@ -24,8 +55,8 @@ export const MatchForm = () => {
             },
             variables: {
                 sets: gameSets,
-                firstPlayerId: "d42df319-5d05-4d66-844e-f3447a52743e",
-                secondPlayerId: "9a1ef5ae-986b-47a4-b3d2-dc688d78e569",
+                firstPlayerId,
+                secondPlayerId,
             },
             mutation: gql`
                 mutation CreateMatch($sets: [SetInput]!, $firstPlayerId: String!, $secondPlayerId: String!){
@@ -51,18 +82,30 @@ export const MatchForm = () => {
                 <Form.Label> <h5><b> Match detail </b></h5></Form.Label>
                 <br/>
                 <Form.Label column sm="4">
-                    First player id
+                    First player
                 </Form.Label>
                 <Col sm="8">
-                    <Form.Control />
+                    <Form.Select aria-label="Default select example" value={firstPlayerId} onChange={(newId) => setFirstPlayerId(newId.target.value)}>
+                        {
+                            players.map(player => 
+                                <option key={player.id} value={player.id}>{`${player.name} ${player.lastName}`}</option>
+                            )
+                        }
+                    </Form.Select>
                 </Col>
                 <br/>
                 <br/>
                 <Form.Label column sm="4">
-                    Second player id
+                    Second player
                 </Form.Label>
                 <Col sm="8">
-                    <Form.Control />
+                    <Form.Select aria-label="Default select example" value={secondPlayerId} onChange={(newId) => setSecondPlayerId(newId.target.value)}>
+                        {
+                            players.map(player => 
+                                <option key={player.id} value={player.id}>{`${player.name} ${player.lastName}`}</option>
+                            )
+                        }
+                    </Form.Select>
                 </Col>
             </Form.Group>
 
