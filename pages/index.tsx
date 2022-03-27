@@ -1,6 +1,7 @@
 import type { NextPage } from 'next'
 import { Col, Container, Row } from 'react-bootstrap'
 import { MatchForm } from '../components/matchForm'
+import { Players } from '../components/players'
 import { Rank } from '../components/rank'
 
 const Home: NextPage = () => {
@@ -8,7 +9,10 @@ const Home: NextPage = () => {
     <Container>
       <Row>
         <Col> <MatchForm/> </Col>
-        <Col> <Rank/> </Col>
+        <Col> 
+          <Rank/> 
+          <Players/>
+        </Col>
       </Row>
     </Container>
   )
