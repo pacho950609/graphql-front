@@ -24,6 +24,36 @@ export const MatchForm = () => {
     const [ secondPlayerPoints, setSecondPlayerPoints ] = useState<number>(0);
     const [players, setPlayers] = useState<Player[]>([]);
     const [pointErrorMsg, setPointErrorMsg] = useState<string>('');
+    const [matchErrorMsg, setMatchErrorMsg] = useState<string>('');
+
+    const gameSetsWin = () => {
+        return gameSets.reduce(
+            (prev, curr) => {
+                if (curr.firstPlayerPoints > curr.secondPlayerPoints) {
+                    return {
+                        first: prev.first + 1,
+                        second: prev.second,
+                    };
+                }
+                return {
+                    first: prev.first,
+                    second: prev.second + 1,
+                };
+            },
+            { first: 0, second: 0 },
+        );
+    }
+
+    const canCreateGameSet = () => {
+        if(gameSets.length > 5) {
+            return false
+        }
+        const wins = gameSetsWin();
+        if(wins.first === 3 || wins.second === 3) {
+            return false;
+        }
+        return true
+    }
 
     const addGameSet = () => {
         if (
@@ -70,6 +100,11 @@ export const MatchForm = () => {
     }, []);
 
     const createMatch = async () => {
+        const setsWins = gameSetsWin();
+        if (setsWins.first !== 3 && setsWins.second !== 3) {
+            return setMatchErrorMsg('There must be a winner (3 sets won)')
+        }
+
         const response = await client.mutate({
             context: {
                 headers: {
@@ -96,7 +131,9 @@ export const MatchForm = () => {
                         }
                     }
                 }
-            `})
+            `
+        })
+        setMatchErrorMsg('');
     }
 
     return (
@@ -157,7 +194,7 @@ export const MatchForm = () => {
                 <br/>
                 <br/>
                 <Col sm="2">
-                    <Button variant="primary" onClick={() => addGameSet()}>
+                    <Button variant="primary" onClick={() => addGameSet()} disabled={!canCreateGameSet()}>
                         Add set
                     </Button>
                 </Col>
@@ -197,6 +234,16 @@ export const MatchForm = () => {
                     </tbody>
                 </Table>
             </Form.Group>
+            {
+                matchErrorMsg ?
+                    <>
+                        <Col sm="12">
+                            {matchErrorMsg}
+                        </Col>
+                        <br/>
+                    </> : 
+                    ''
+            }
             <Button variant="primary" onClick={() => createMatch()}>
                 Save match result
             </Button>
