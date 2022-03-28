@@ -63,13 +63,13 @@ export const MatchForm = () => {
         ) {
             return setPointErrorMsg('Points difference must be two');
         } else if (firstPlayerPoints > secondPlayerPoints) {
-            if (firstPlayerPoints < 11 || firstPlayerPoints > 11)
+            if (firstPlayerPoints < 11 || (firstPlayerPoints > 11 && secondPlayerPoints < 10))
                     return setPointErrorMsg('Set must end at 11 points');
         } else if (secondPlayerPoints > firstPlayerPoints) {
-            if (secondPlayerPoints < 11 || secondPlayerPoints > 11)
+            if (secondPlayerPoints < 11 || (secondPlayerPoints > 11 && firstPlayerPoints < 10))
                     return setPointErrorMsg('Set must end at 11 points');
         } else if (firstPlayerPoints === secondPlayerPoints) {
-                    return setPointErrorMsg('There must be a winner');
+                    return setPointErrorMsg('There must be a set winner');
         } 
 
         setPointErrorMsg('');
@@ -188,7 +188,7 @@ export const MatchForm = () => {
                 </Col>
                 <br/>
                 <br/>
-                <Col sm="12">
+                <Col sm="12" style={{color:'red'}}>
                     {pointErrorMsg}
                 </Col>
                 <br/>
@@ -237,7 +237,7 @@ export const MatchForm = () => {
             {
                 matchErrorMsg ?
                     <>
-                        <Col sm="12">
+                        <Col sm="12" style={{color:'red'}}>
                             {matchErrorMsg}
                         </Col>
                         <br/>
