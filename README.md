@@ -1,7 +1,13 @@
 This is a [Next.js](https://nextjs.org/) project
 ## Getting Started
 
-First, run the development server:
+First, install the project dependence:
+
+```bash
+npm i
+```
+
+Second, run the development server:
 
 ```bash
 npm run dev
