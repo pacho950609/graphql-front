@@ -23,6 +23,29 @@ export const MatchForm = () => {
     const [ firstPlayerPoints, setFirstPlayerPoints ] = useState<number>(0);
     const [ secondPlayerPoints, setSecondPlayerPoints ] = useState<number>(0);
     const [players, setPlayers] = useState<Player[]>([]);
+    const [pointErrorMsg, setPointErrorMsg] = useState<string>('');
+
+    const addGameSet = () => {
+        if (
+            firstPlayerPoints >= 10 &&
+            secondPlayerPoints >= 10 &&
+            Math.abs(firstPlayerPoints - secondPlayerPoints) !== 2
+        ) {
+            return setPointErrorMsg('Points difference must be two');
+        } else if (firstPlayerPoints > secondPlayerPoints) {
+            if (firstPlayerPoints < 11 || firstPlayerPoints > 11)
+                    return setPointErrorMsg('Set must end at 11 points');
+        } else if (secondPlayerPoints > firstPlayerPoints) {
+            if (secondPlayerPoints < 11 || secondPlayerPoints > 11)
+                    return setPointErrorMsg('Set must end at 11 points');
+        } else if (firstPlayerPoints === secondPlayerPoints) {
+                    return setPointErrorMsg('There must be a winner');
+        } 
+
+        setPointErrorMsg('');
+        setGameSet([...gameSets, {firstPlayerPoints, secondPlayerPoints, setNumber: gameSets.length + 1}]);
+        
+    }
 
     useEffect(() => {
         client.query({
@@ -128,9 +151,13 @@ export const MatchForm = () => {
                 </Col>
                 <br/>
                 <br/>
+                <Col sm="12">
+                    {pointErrorMsg}
+                </Col>
+                <br/>
                 <br/>
                 <Col sm="2">
-                    <Button variant="primary" onClick={() => setGameSet([...gameSets, {firstPlayerPoints, secondPlayerPoints, setNumber: gameSets.length + 1}])}>
+                    <Button variant="primary" onClick={() => addGameSet()}>
                         Add set
                     </Button>
                 </Col>
