@@ -134,6 +134,7 @@ export const MatchForm = () => {
             `
         })
         setMatchErrorMsg('');
+        setGameSet([]);
     }
 
     return (
