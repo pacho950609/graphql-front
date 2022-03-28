@@ -3,6 +3,7 @@ import { Form, Button, Table, Col, Row, } from 'react-bootstrap';
 import _ from 'lodash'
 import client from '../apoloClient/apoloClient';
 import { gql } from "@apollo/client";
+import { Player } from '../context/matchContext';
 
 interface GameSet {
     firstPlayerPoints: number;
@@ -10,21 +11,20 @@ interface GameSet {
     setNumber: number;
 }
 
-interface Player {
-    id: string;
-    name: String;
-    lastName: String;
-}
-
-export const MatchForm = () => {  
+export const MatchForm = (props:{ players: Player[]}) => {  
     const [gameSets, setGameSet] = useState<GameSet[]>([]);
     const [ firstPlayerId, setFirstPlayerId ] = useState<string>('');
     const [ secondPlayerId, setSecondPlayerId ] = useState<string>('');
     const [ firstPlayerPoints, setFirstPlayerPoints ] = useState<number>(0);
     const [ secondPlayerPoints, setSecondPlayerPoints ] = useState<number>(0);
-    const [players, setPlayers] = useState<Player[]>([]);
     const [pointErrorMsg, setPointErrorMsg] = useState<string>('');
     const [matchErrorMsg, setMatchErrorMsg] = useState<string>('');
+    const [matchMsg, setMatchMsg] = useState<string>('');
+
+    useEffect(() => {
+        setFirstPlayerId(props.players[0]?.id)
+        setSecondPlayerId(props.players[1]?.id)
+    }, [props.players])
 
     const gameSetsWin = () => {
         return gameSets.reduce(
@@ -77,28 +77,6 @@ export const MatchForm = () => {
         
     }
 
-    useEffect(() => {
-        client.query({
-            query: gql`
-                {
-                    getPlayers 
-                    {
-                        id
-                        name
-                        lastName
-                    }
-                }
-            `,
-        }).then(response => {
-            setPlayers(response.data.getPlayers)
-            setFirstPlayerId(response.data.getPlayers[0].id)
-            setSecondPlayerId(response.data.getPlayers[1].id)
-        }).catch(error=> {
-            console.log('error', error)
-        });
-      
-    }, []);
-
     const createMatch = async () => {
         const setsWins = gameSetsWin();
         if (setsWins.first !== 3 && setsWins.second !== 3) {
@@ -134,6 +112,7 @@ export const MatchForm = () => {
             `
         })
         setMatchErrorMsg('');
+        setMatchMsg('Match saved');
         setGameSet([]);
     }
 
@@ -148,7 +127,7 @@ export const MatchForm = () => {
                 <Col sm="8">
                     <Form.Select aria-label="Default select example" value={firstPlayerId} onChange={(newId) => setFirstPlayerId(newId.target.value)}>
                         {
-                            players.map(player => 
+                            props.players.map(player => 
                                 <option key={player.id} value={player.id}>{`${player.name} ${player.lastName}`}</option>
                             )
                         }
@@ -162,7 +141,7 @@ export const MatchForm = () => {
                 <Col sm="8">
                     <Form.Select aria-label="Default select example" value={secondPlayerId} onChange={(newId) => setSecondPlayerId(newId.target.value)}>
                         {
-                            players.map(player => 
+                            props.players.map(player => 
                                 <option key={player.id} value={player.id}>{`${player.name} ${player.lastName}`}</option>
                             )
                         }
@@ -225,11 +204,11 @@ export const MatchForm = () => {
                     </thead>
                     <tbody>
                         <tr>
-                            <td> { firstPlayerId? `${players.find(p => p.id === firstPlayerId)?.name} ${players.find(p => p.id === firstPlayerId)?.lastName}` : '-'} </td>
+                            <td> { firstPlayerId? `${props.players.find(p => p.id === firstPlayerId)?.name} ${props.players.find(p => p.id === firstPlayerId)?.lastName}` : '-'} </td>
                             { _.range(5).map(range => <td key={range} > { gameSets[range] ? gameSets[range].firstPlayerPoints : '-' } </td>) }
                         </tr>
                         <tr>
-                            <td> { secondPlayerId? `${players.find(p => p.id === secondPlayerId)?.name} ${players.find(p => p.id === secondPlayerId)?.lastName}` : '-'} </td>
+                            <td> { secondPlayerId? `${props.players.find(p => p.id === secondPlayerId)?.name} ${props.players.find(p => p.id === secondPlayerId)?.lastName}` : '-'} </td>
                             { _.range(5).map(range => <td key={range} > { gameSets[range] ? gameSets[range].secondPlayerPoints : '-' } </td>) }
                         </tr>
                     </tbody>
@@ -240,6 +219,16 @@ export const MatchForm = () => {
                     <>
                         <Col sm="12" style={{color:'red'}}>
                             {matchErrorMsg}
+                        </Col>
+                        <br/>
+                    </> : 
+                    ''
+            }
+            {
+                matchMsg ?
+                    <>
+                        <Col sm="12">
+                            {matchMsg}
                         </Col>
                         <br/>
                     </> : 
