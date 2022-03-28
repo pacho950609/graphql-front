@@ -1,39 +1,10 @@
 import { Form, Table } from 'react-bootstrap';
 import _ from 'lodash'
-import { useEffect, useState } from 'react';
-import client from '../apoloClient/apoloClient';
-import { gql } from "@apollo/client";
+import { useMatch } from '../context/matchContext';
 
-interface Ranking {
-    id: string;
-    name: String;
-    lastName: String;
-    wins: number;
-    losses: number;
-}
 
 export const Rank = () => {  
-    const [ranking, setRanking] = useState<Ranking[]>([]);
-    useEffect(() => {
-        client.query({
-            query: gql`
-                {
-                    getRank {
-                        id
-                        name
-                        lastName
-                        wins
-                        losses
-                    }
-                }
-            `,
-        }).then(response => {
-            setRanking(response.data.getRank)
-        }).catch(error=> {
-            console.log('error', error)
-        });
-      
-    }, []);
+    const { ranking } = useMatch();
 
     return (
         <Form>

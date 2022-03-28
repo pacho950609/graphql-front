@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Form, Button, Table, Col, Row, } from 'react-bootstrap';
 import _ from 'lodash'
-import client from '../apoloClient/apoloClient';
-import { gql } from "@apollo/client";
-import { Player } from '../context/matchContext';
+import { Player, useMatch } from '../context/matchContext';
 
 interface GameSet {
     firstPlayerPoints: number;
@@ -12,6 +10,7 @@ interface GameSet {
 }
 
 export const MatchForm = (props:{ players: Player[]}) => {  
+    const { createMatch } = useMatch();
     const [gameSets, setGameSet] = useState<GameSet[]>([]);
     const [ firstPlayerId, setFirstPlayerId ] = useState<string>('');
     const [ secondPlayerId, setSecondPlayerId ] = useState<string>('');
@@ -77,40 +76,18 @@ export const MatchForm = (props:{ players: Player[]}) => {
         
     }
 
-    const createMatch = async () => {
+    const createPingPongMatch = async () => {
         const setsWins = gameSetsWin();
         if (setsWins.first !== 3 && setsWins.second !== 3) {
             return setMatchErrorMsg('There must be a winner (3 sets won)')
         }
 
-        const response = await client.mutate({
-            context: {
-                headers: {
-                    Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYxMTk1ZDMzLTRhMzctNGFlYS04OTFiLTA3NWQwZGJlY2M3YSIsImlhdCI6MTY0ODM4MDg0Nn0.USdtRxpXtgaytrLxUnJNzDGovooSCWKT2v6gYuyWvWY'
-                }
-            },
-            variables: {
-                sets: gameSets,
-                firstPlayerId,
-                secondPlayerId,
-            },
-            mutation: gql`
-                mutation CreateMatch($sets: [SetInput]!, $firstPlayerId: String!, $secondPlayerId: String!){
-                    addMatch(input:{
-                        firstPlayerId: $firstPlayerId
-                        secondPlayerId: $secondPlayerId
-                        sets: $sets
-                    }) {
-                        id
-                        sets {
-                            firstPlayerPoints
-                            secondPlayerPoints
-                            setNumber
-                        }
-                    }
-                }
-            `
-        })
+        await createMatch({
+            firstPlayerId,
+            secondPlayerId,
+            gameSets
+        });
+        
         setMatchErrorMsg('');
         setMatchMsg('Match saved');
         setGameSet([]);
@@ -234,7 +211,7 @@ export const MatchForm = (props:{ players: Player[]}) => {
                     </> : 
                     ''
             }
-            <Button variant="primary" onClick={() => createMatch()}>
+            <Button variant="primary" onClick={() => createPingPongMatch()}>
                 Save match result
             </Button>
         </Form>
