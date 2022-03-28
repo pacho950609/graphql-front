@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import client from '../apoloClient/apoloClient'; 
+import client from '../apolloClient/apolloClient'; 
 import { gql } from "@apollo/client";
 
 export interface Player {
