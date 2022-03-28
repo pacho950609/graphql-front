@@ -150,7 +150,7 @@ export const MatchForm = () => {
                 </Col>
                 <br/>
                 <br/>
-                <Col sm="2">
+                <Col sm="3">
                     <Button variant="primary" onClick={() => addGameSet()} disabled={!canCreateGameSet()}>
                         Add set
                     </Button>
