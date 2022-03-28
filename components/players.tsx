@@ -1,36 +1,10 @@
 import { Form, Table } from 'react-bootstrap';
 import _ from 'lodash'
-import { useEffect, useState } from 'react';
-import client from '../apoloClient/apoloClient';
-import { gql } from "@apollo/client";
+import { useMatch } from '../context/matchContext';
 
-interface Player {
-    id: string;
-    name: String;
-    lastName: String;
-}
 
 export const Players = () => {  
-    const [players, setPlayers] = useState<Player[]>([]);
-    useEffect(() => {
-        client.query({
-            query: gql`
-                {
-                    getPlayers 
-                    {
-                        id
-                        name
-                        lastName
-                    }
-                }
-            `,
-        }).then(response => {
-            setPlayers(response.data.getPlayers)
-        }).catch(error=> {
-            console.log('error', error)
-        });
-      
-    }, []);
+    const { players } = useMatch();
 
     return (
         <Form>

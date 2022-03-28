@@ -6,11 +6,10 @@ import { Rank } from '../components/rank'
 import { useMatch } from '../context/matchContext'
 
 const Home: NextPage = () => {
-  const { players, ranking } = useMatch();
   return (
     <Container>
       <Row>
-        <Col> <MatchForm players={players}/> </Col>
+        <Col> <MatchForm/> </Col>
         <Col> 
           <Rank/> 
           <Players/>

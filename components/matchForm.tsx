@@ -9,8 +9,8 @@ interface GameSet {
     setNumber: number;
 }
 
-export const MatchForm = (props:{ players: Player[]}) => {  
-    const { createMatch } = useMatch();
+export const MatchForm = () => {  
+    const { createMatch, players } = useMatch();
     const [gameSets, setGameSet] = useState<GameSet[]>([]);
     const [ firstPlayerId, setFirstPlayerId ] = useState<string>('');
     const [ secondPlayerId, setSecondPlayerId ] = useState<string>('');
@@ -21,9 +21,9 @@ export const MatchForm = (props:{ players: Player[]}) => {
     const [matchMsg, setMatchMsg] = useState<string>('');
 
     useEffect(() => {
-        setFirstPlayerId(props.players[0]?.id)
-        setSecondPlayerId(props.players[1]?.id)
-    }, [props.players])
+        setFirstPlayerId(players[0]?.id)
+        setSecondPlayerId(players[1]?.id)
+    }, [players])
 
     const gameSetsWin = () => {
         return gameSets.reduce(
@@ -87,7 +87,7 @@ export const MatchForm = (props:{ players: Player[]}) => {
             secondPlayerId,
             gameSets
         });
-        
+
         setMatchErrorMsg('');
         setMatchMsg('Match saved');
         setGameSet([]);
@@ -104,7 +104,7 @@ export const MatchForm = (props:{ players: Player[]}) => {
                 <Col sm="8">
                     <Form.Select aria-label="Default select example" value={firstPlayerId} onChange={(newId) => setFirstPlayerId(newId.target.value)}>
                         {
-                            props.players.map(player => 
+                            players.map(player => 
                                 <option key={player.id} value={player.id}>{`${player.name} ${player.lastName}`}</option>
                             )
                         }
@@ -118,7 +118,7 @@ export const MatchForm = (props:{ players: Player[]}) => {
                 <Col sm="8">
                     <Form.Select aria-label="Default select example" value={secondPlayerId} onChange={(newId) => setSecondPlayerId(newId.target.value)}>
                         {
-                            props.players.map(player => 
+                            players.map(player => 
                                 <option key={player.id} value={player.id}>{`${player.name} ${player.lastName}`}</option>
                             )
                         }
@@ -181,11 +181,11 @@ export const MatchForm = (props:{ players: Player[]}) => {
                     </thead>
                     <tbody>
                         <tr>
-                            <td> { firstPlayerId? `${props.players.find(p => p.id === firstPlayerId)?.name} ${props.players.find(p => p.id === firstPlayerId)?.lastName}` : '-'} </td>
+                            <td> { firstPlayerId? `${players.find(p => p.id === firstPlayerId)?.name} ${players.find(p => p.id === firstPlayerId)?.lastName}` : '-'} </td>
                             { _.range(5).map(range => <td key={range} > { gameSets[range] ? gameSets[range].firstPlayerPoints : '-' } </td>) }
                         </tr>
                         <tr>
-                            <td> { secondPlayerId? `${props.players.find(p => p.id === secondPlayerId)?.name} ${props.players.find(p => p.id === secondPlayerId)?.lastName}` : '-'} </td>
+                            <td> { secondPlayerId? `${players.find(p => p.id === secondPlayerId)?.name} ${players.find(p => p.id === secondPlayerId)?.lastName}` : '-'} </td>
                             { _.range(5).map(range => <td key={range} > { gameSets[range] ? gameSets[range].secondPlayerPoints : '-' } </td>) }
                         </tr>
                     </tbody>
