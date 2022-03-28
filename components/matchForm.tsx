@@ -224,11 +224,11 @@ export const MatchForm = () => {
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Francisco Ricaurte</td>
+                            <td> { firstPlayerId? `${players.find(p => p.id === firstPlayerId)?.name} ${players.find(p => p.id === firstPlayerId)?.lastName}` : '-'} </td>
                             { _.range(5).map(range => <td key={range} > { gameSets[range] ? gameSets[range].firstPlayerPoints : '-' } </td>) }
                         </tr>
                         <tr>
-                            <td> Dhanna Gomez </td>
+                            <td> { secondPlayerId? `${players.find(p => p.id === secondPlayerId)?.name} ${players.find(p => p.id === secondPlayerId)?.lastName}` : '-'} </td>
                             { _.range(5).map(range => <td key={range} > { gameSets[range] ? gameSets[range].secondPlayerPoints : '-' } </td>) }
                         </tr>
                     </tbody>
